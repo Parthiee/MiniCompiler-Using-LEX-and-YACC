@@ -32,8 +32,10 @@ id {words}({words}|{digits})*
 "<" {printf("FOUND: %s\n",yytext); yylval.addr = strdup(yytext); return REL_LT;}
 "<=" {printf("FOUND: %s\n",yytext); yylval.addr = strdup(yytext); return REL_LTEQ;}
 "/" {printf("FOUND: %s\n",yytext); return yytext[0];}
+"while" {printf("FOUND: %s\n",yytext); return WHILE;}
 {id} {printf("FOUND: %s\n",yytext); yylval.addr=strdup(yytext); return ID;}
 {digits} {printf("FOUND: %s\n",yytext); yylval.intval =atoi(yytext); return NUM;}
+
 [ \t\n] { }
 . {printf("INVALID TOKEN: %s\n",yytext); exit(1); }
 

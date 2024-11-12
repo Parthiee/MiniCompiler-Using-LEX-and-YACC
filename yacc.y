@@ -56,7 +56,7 @@ char* addr;
 %left '+' '-'
 %left '*' '/'
 %right UMINUS
-%token <addr>ID INT FLOAT UMINUS <addr>REL_LT <addr>REL_LTEQ <addr>REL_EQ <addr>REL_NEQ <addr>REL_GT <addr>REL_GTEQ IF ELSE <intval>NUM
+%token <addr>ID INT FLOAT UMINUS <addr>REL_LT <addr>REL_LTEQ <addr>REL_EQ <addr>REL_NEQ <addr>REL_GT <addr>REL_GTEQ IF ELSE <intval>NUM WHILE
 %type <addr>S <addr>E <addr>REL_E <intval>NUM_E
 
 %%
@@ -249,7 +249,7 @@ S : IF '(' REL_E ')' {
  		truelabel = createLabel();
  		falselabel = createLabel();
 		nextlabel = createLabel();
-		fprintf(inter, "if_false %s goto %s\n", $3, falselabel);
+		fprintf(inter, "if_false %s %s %s goto %s\n", conds.operand1,conds.operator,conds.operand2, nextlabel); 
 		fprintf(assembly, "CMP %s,%s\n", conds.operand1, conds.operand2);
 		if (!strcmp(conds.operator,"<"))
 		 {
@@ -296,7 +296,53 @@ S : IF '(' REL_E ')' {
 
  
   
-BLOCK : '{' SS '}';
+BLOCK : '{' SS '}'
+      ;
+
+S : WHILE '(' REL_E ')' {  		
+		truelabel = createLabel();
+		nextlabel = createLabel();
+		fprintf(inter, "%s:\n", truelabel); 
+		fprintf(inter, "if_false %s %s %s goto %s\n", conds.operand1,conds.operator,conds.operand2, nextlabel); 
+		fprintf(assembly, "%s:\n", truelabel);
+		fprintf(assembly, "CMP %s,%s\n", conds.operand1, conds.operand2);
+		if (!strcmp(conds.operator,"<"))
+		 {
+		    fprintf(assembly, "JG %s\n",nextlabel);
+		 }
+		 else if (!strcmp(conds.operator,"<="))
+		 {
+		    fprintf(assembly, "JGE %s\n",nextlabel);
+		 }
+		 else if (!strcmp(conds.operator,"=="))
+		 {
+		    fprintf(assembly, "JNE %s\n",nextlabel);
+		 }
+		 else if (!strcmp(conds.operator,"!="))
+		 {
+		    fprintf(assembly, "JE %s\n",nextlabel);
+		 }
+		 else if (!strcmp(conds.operator,">"))
+		 {
+		    fprintf(assembly, "JL %s\n",nextlabel);
+		 }
+		 else if (!strcmp(conds.operator,">="))
+		 {
+		    fprintf(assembly, "JLE %s\n",nextlabel);
+		 }
+		
+		
+		
+		}
+    BLOCK   
+         {
+         	fprintf(inter, "goto %s\n",truelabel); 
+         	fprintf(inter, "%s:\n",nextlabel); 
+         	
+         	fprintf(assembly, "JMP %s\n",truelabel); 
+         	fprintf(assembly, "%s:\n",nextlabel); 
+         }
+   ;
 
   
   

@@ -66,7 +66,8 @@ extern int yydebug;
     REL_GTEQ = 267,                /* REL_GTEQ  */
     IF = 268,                      /* IF  */
     ELSE = 269,                    /* ELSE  */
-    NUM = 270                      /* NUM  */
+    NUM = 270,                     /* NUM  */
+    WHILE = 271                    /* WHILE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -88,6 +89,7 @@ extern int yydebug;
 #define IF 268
 #define ELSE 269
 #define NUM 270
+#define WHILE 271
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -99,7 +101,7 @@ int intval;
 float floatval;
 char* addr;
 
-#line 103 "y.tab.h"
+#line 105 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
