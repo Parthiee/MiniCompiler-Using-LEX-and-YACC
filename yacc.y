@@ -7,7 +7,7 @@ extern int yylex();
 extern FILE *yyin;
 FILE *inter;
 FILE *assembly;
-FILE *inter_op;
+
 
 
 struct Operation
@@ -189,6 +189,7 @@ E : E '+' E {
       fprintf(assembly,"MOV %s,%s\n",$$,temp1);
   
   }
+  | '(' E ')' {  $$ = createTemp();    fprintf(inter,"%s := %s\n",$$,$2);      }
   | ID { $$ = strdup($1); }
   | NUM_E {
   	$$ = malloc(10);
@@ -316,7 +317,6 @@ int main(int argc, char **argv)
 	yyin = fopen(argv[1], "r");
 	inter = fopen("intermediate.i","a+");
 	assembly = fopen("assembly.s","a+");
-	inter_op = fopen("inter_op.i","a+");
 	
 	if(!yyin)
 	{
