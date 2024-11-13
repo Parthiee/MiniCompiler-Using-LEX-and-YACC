@@ -25,6 +25,7 @@ id {words}({words}|{digits})*
 "+" {printf("FOUND: %s\n",yytext); return yytext[0];}
 "-" {printf("FOUND: %s\n",yytext); return yytext[0];}
 "*" {printf("FOUND: %s\n",yytext); return yytext[0];}
+"**" {printf("FOUND: %s\n",yytext); return STAR_STAR;}
 ">" {printf("FOUND: %s\n",yytext); yylval.addr = strdup(yytext); return REL_GT;}
 ">=" {printf("FOUND: %s\n",yytext); yylval.addr = strdup(yytext);return REL_GTEQ;}
 "==" {printf("FOUND: %s\n",yytext); yylval.addr = strdup(yytext); return REL_EQ;}

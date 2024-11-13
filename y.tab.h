@@ -67,7 +67,8 @@ extern int yydebug;
     IF = 268,                      /* IF  */
     ELSE = 269,                    /* ELSE  */
     NUM = 270,                     /* NUM  */
-    WHILE = 271                    /* WHILE  */
+    WHILE = 271,                   /* WHILE  */
+    STAR_STAR = 272                /* STAR_STAR  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -90,6 +91,7 @@ extern int yydebug;
 #define ELSE 269
 #define NUM 270
 #define WHILE 271
+#define STAR_STAR 272
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -101,7 +103,7 @@ int intval;
 float floatval;
 char* addr;
 
-#line 105 "y.tab.h"
+#line 107 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

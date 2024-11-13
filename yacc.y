@@ -56,7 +56,8 @@ char* addr;
 %left '+' '-'
 %left '*' '/'
 %right UMINUS
-%token <addr>ID INT FLOAT UMINUS <addr>REL_LT <addr>REL_LTEQ <addr>REL_EQ <addr>REL_NEQ <addr>REL_GT <addr>REL_GTEQ IF ELSE <intval>NUM WHILE
+%right STAR_STAR
+%token <addr>ID INT FLOAT UMINUS <addr>REL_LT <addr>REL_LTEQ <addr>REL_EQ <addr>REL_NEQ <addr>REL_GT <addr>REL_GTEQ IF ELSE <intval>NUM WHILE STAR_STAR
 %type <addr>S <addr>E <addr>REL_E <intval>NUM_E
 
 %%
@@ -133,6 +134,38 @@ E : E '+' E {
       fprintf(assembly,"SUB %s,%s\n",temp1,temp2);
       fprintf(assembly,"MOV %s,%s\n",$$,temp1);
   }
+  
+   | E STAR_STAR E {  
+      $$ = createTemp();
+      
+      
+      char* temp1 = createRegister();
+      // STRENGTH REDUCTION
+      truelabel = createLabel();
+      nextlabel = createLabel();
+      char* temp2 = createTemp();
+      fprintf(inter,"%s := %s\n",$$,$1); 
+      fprintf(inter,"%s := %s\n",temp2,$3); 
+ 
+      fprintf(inter,"%s:\n",truelabel);
+      fprintf(inter,"if_false %s == 0 goto %s \n",temp2,nextlabel); 
+      fprintf(inter,"%s := %s * %s \n",$$,$$,$1); 
+      fprintf(inter,"%s := %s - 1 \n",temp2,temp2); 
+      fprintf(inter,"goto %s \n",truelabel); 
+      fprintf(inter,"%s: \n",nextlabel); 
+      
+      
+      fprintf(assembly,"MOV %s,%s\n",temp1,$3);
+      fprintf(assembly,"MOV %s,%s\n",$$,$1);
+      fprintf(assembly,"%s:\n",truelabel);
+      fprintf(assembly,"CMP %s,#0\n",temp1);
+      fprintf(assembly,"JZ %s\n",nextlabel);
+      fprintf(assembly,"MUL %s,%s\n",$$,$1);
+      fprintf(assembly,"SUB %s,#1\n",temp1);
+      fprintf(assembly,"JMP %s\n",truelabel);
+      fprintf(assembly,"%s:\n",nextlabel);
+  }
+
   | E '*' E { 
   $$ = createTemp();
   
