@@ -70,7 +70,7 @@ P : D
   | S
   ;
   
-D : T DD ';'D
+D : T DD ';' D
    |
    ;
   
@@ -143,7 +143,7 @@ E : E '+' E 	  {
       						fprintf(inter,"%s := %s\n",temp2,$3); 
  
       						fprintf(inter,"%s:\n",truelabel);
-     						fprintf(inter,"if_false %s == 1 goto %s \n",temp2,nextlabel); 
+     						fprintf(inter,"if_false %s != 1 goto %s \n",temp2,nextlabel); 
       						fprintf(inter,"%s := %s * %s \n",$$,$$,$1); 
       						fprintf(inter,"%s := %s - 1 \n",temp2,temp2); 
       						fprintf(inter,"goto %s \n",truelabel); 
@@ -240,7 +240,7 @@ E : E '+' E 	  {
        | NUM_E '-' NUM_E 				{ $$ = $1 - $3; }
        | NUM_E '*' NUM_E 				{ $$ = $1 * $3; }
        | NUM_E '/' NUM_E 				{ $$ = $1 / $3; }
-       | '-' NUM_E 					{ $$ = -$2; }
+       | '-' NUM_E %prec UMINUS				{ $$ = -$2; }
        | NUM 						{$$ = $1; }
        ;
        
