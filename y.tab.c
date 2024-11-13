@@ -658,9 +658,9 @@ static const yytype_int16 yyrline[] =
 {
        0,    63,    63,    64,    68,    69,    72,    73,    76,    77,
       80,    80,    83,    87,    92,   125,   136,   168,   180,   192,
-     193,   194,   200,   201,   202,   203,   204,   205,   208,   215,
-     221,   227,   234,   240,   248,   281,   286,   248,   299,   302,
-     302
+     202,   203,   209,   210,   211,   212,   213,   214,   217,   224,
+     230,   236,   243,   249,   257,   290,   295,   257,   308,   311,
+     311
 };
 #endif
 
@@ -1412,63 +1412,72 @@ fprintf(assembly,"MOV %s,%s\n",(yyvsp[-3].addr),(yyvsp[-1].addr));
 
   case 19: /* E: '(' E ')'  */
 #line 192 "yacc.y"
-              {  (yyval.addr) = createTemp();    fprintf(inter,"%s := %s\n",(yyval.addr),(yyvsp[-1].addr));      }
-#line 1417 "y.tab.c"
+              {  (yyval.addr) = createTemp();    fprintf(inter,"%s := %s\n",(yyval.addr),(yyvsp[-1].addr));   
+  char* temp1 = createRegister();
+  fprintf(assembly,"MOV %s,%s\n",temp1,(yyvsp[-1].addr));
+  fprintf(assembly,"MOV %s,%s\n",(yyval.addr),temp1);
+  
+  
+  
+  
+  
+  }
+#line 1426 "y.tab.c"
     break;
 
   case 20: /* E: ID  */
-#line 193 "yacc.y"
+#line 202 "yacc.y"
        { (yyval.addr) = strdup((yyvsp[0].addr)); }
-#line 1423 "y.tab.c"
+#line 1432 "y.tab.c"
     break;
 
   case 21: /* E: NUM_E  */
-#line 194 "yacc.y"
+#line 203 "yacc.y"
           {
   	(yyval.addr) = malloc(10);
   	sprintf((yyval.addr),"%d",(yyvsp[0].intval));
   }
-#line 1432 "y.tab.c"
+#line 1441 "y.tab.c"
     break;
 
   case 22: /* NUM_E: NUM_E '+' NUM_E  */
-#line 200 "yacc.y"
+#line 209 "yacc.y"
                          { (yyval.intval) = (yyvsp[-2].intval) + (yyvsp[0].intval); }
-#line 1438 "y.tab.c"
+#line 1447 "y.tab.c"
     break;
 
   case 23: /* NUM_E: NUM_E '-' NUM_E  */
-#line 201 "yacc.y"
+#line 210 "yacc.y"
                          { (yyval.intval) = (yyvsp[-2].intval) - (yyvsp[0].intval); }
-#line 1444 "y.tab.c"
+#line 1453 "y.tab.c"
     break;
 
   case 24: /* NUM_E: NUM_E '*' NUM_E  */
-#line 202 "yacc.y"
+#line 211 "yacc.y"
                          { (yyval.intval) = (yyvsp[-2].intval) * (yyvsp[0].intval); }
-#line 1450 "y.tab.c"
+#line 1459 "y.tab.c"
     break;
 
   case 25: /* NUM_E: NUM_E '/' NUM_E  */
-#line 203 "yacc.y"
+#line 212 "yacc.y"
                          { (yyval.intval) = (yyvsp[-2].intval) / (yyvsp[0].intval); }
-#line 1456 "y.tab.c"
+#line 1465 "y.tab.c"
     break;
 
   case 26: /* NUM_E: '-' NUM_E  */
-#line 204 "yacc.y"
+#line 213 "yacc.y"
                    { (yyval.intval) = -(yyvsp[0].intval); }
-#line 1462 "y.tab.c"
+#line 1471 "y.tab.c"
     break;
 
   case 27: /* NUM_E: NUM  */
-#line 205 "yacc.y"
+#line 214 "yacc.y"
              {(yyval.intval) = (yyvsp[0].intval); }
-#line 1468 "y.tab.c"
+#line 1477 "y.tab.c"
     break;
 
   case 28: /* REL_E: E REL_LT E  */
-#line 208 "yacc.y"
+#line 217 "yacc.y"
                     { 
   (yyval.addr) = createTemp();
   fprintf(inter,"%s := %s %s %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[-1].addr),(yyvsp[0].addr));
@@ -1476,33 +1485,33 @@ fprintf(assembly,"MOV %s,%s\n",(yyvsp[-3].addr),(yyvsp[-1].addr));
   conds.operator = strdup((yyvsp[-1].addr));
   conds.operand2 = strdup((yyvsp[0].addr));
   }
-#line 1480 "y.tab.c"
+#line 1489 "y.tab.c"
     break;
 
   case 29: /* REL_E: E REL_LTEQ E  */
-#line 215 "yacc.y"
+#line 224 "yacc.y"
                  {
   (yyval.addr) = createTemp(); fprintf(inter,"%s := %s %s %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[-1].addr),(yyvsp[0].addr)); 
   conds.operand1 = strdup((yyvsp[-2].addr));
   conds.operator = strdup((yyvsp[-1].addr));
   conds.operand2 = strdup((yyvsp[0].addr));
   }
-#line 1491 "y.tab.c"
+#line 1500 "y.tab.c"
     break;
 
   case 30: /* REL_E: E REL_EQ E  */
-#line 221 "yacc.y"
+#line 230 "yacc.y"
                { 
   (yyval.addr) = createTemp(); fprintf(inter,"%s := %s %s %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[-1].addr),(yyvsp[0].addr)); 
   conds.operand1 = strdup((yyvsp[-2].addr));
   conds.operator = strdup((yyvsp[-1].addr));
   conds.operand2 = strdup((yyvsp[0].addr));
   }
-#line 1502 "y.tab.c"
+#line 1511 "y.tab.c"
     break;
 
   case 31: /* REL_E: E REL_NEQ E  */
-#line 227 "yacc.y"
+#line 236 "yacc.y"
                 { 
   (yyval.addr) = createTemp();
   fprintf(inter,"%s := %s %s %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[-1].addr),(yyvsp[0].addr));
@@ -1510,22 +1519,22 @@ fprintf(assembly,"MOV %s,%s\n",(yyvsp[-3].addr),(yyvsp[-1].addr));
   conds.operator = strdup((yyvsp[-1].addr));
   conds.operand2 = strdup((yyvsp[0].addr));
   }
-#line 1514 "y.tab.c"
+#line 1523 "y.tab.c"
     break;
 
   case 32: /* REL_E: E REL_GT E  */
-#line 234 "yacc.y"
+#line 243 "yacc.y"
                { (yyval.addr) = createTemp();
   fprintf(inter,"%s := %s %s %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[-1].addr),(yyvsp[0].addr)); 
   conds.operand1 = strdup((yyvsp[-2].addr));
   conds.operator = strdup((yyvsp[-1].addr));
   conds.operand2 = strdup((yyvsp[0].addr));
   }
-#line 1525 "y.tab.c"
+#line 1534 "y.tab.c"
     break;
 
   case 33: /* REL_E: E REL_GTEQ E  */
-#line 240 "yacc.y"
+#line 249 "yacc.y"
                  { (yyval.addr) = createTemp(); 
   fprintf(inter,"%s := %s %s %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[-1].addr),(yyvsp[0].addr));
   conds.operand1 = strdup((yyvsp[-2].addr));
@@ -1533,11 +1542,11 @@ fprintf(assembly,"MOV %s,%s\n",(yyvsp[-3].addr),(yyvsp[-1].addr));
   conds.operand2 = strdup((yyvsp[0].addr));
   
   }
-#line 1537 "y.tab.c"
+#line 1546 "y.tab.c"
     break;
 
   case 34: /* $@1: %empty  */
-#line 248 "yacc.y"
+#line 257 "yacc.y"
                      {
  		truelabel = createLabel();
  		falselabel = createLabel();
@@ -1571,39 +1580,39 @@ fprintf(assembly,"MOV %s,%s\n",(yyvsp[-3].addr),(yyvsp[-1].addr));
 		
 		
 		}
-#line 1575 "y.tab.c"
+#line 1584 "y.tab.c"
     break;
 
   case 35: /* $@2: %empty  */
-#line 281 "yacc.y"
+#line 290 "yacc.y"
          {
 		fprintf(inter, "goto %s\n", nextlabel);
 		 fprintf(assembly, "JMP %s\n",nextlabel);
 
             }
-#line 1585 "y.tab.c"
+#line 1594 "y.tab.c"
     break;
 
   case 36: /* $@3: %empty  */
-#line 286 "yacc.y"
+#line 295 "yacc.y"
            {
          	fprintf(inter, "%s:\n", falselabel); 
          	fprintf(assembly, "%s:\n",falselabel);
           }
-#line 1594 "y.tab.c"
+#line 1603 "y.tab.c"
     break;
 
   case 37: /* S: IF '(' REL_E ')' $@1 BLOCK $@2 ELSE $@3 BLOCK  */
-#line 291 "yacc.y"
+#line 300 "yacc.y"
          {
          	fprintf(inter, "%s:\n", nextlabel);
          	fprintf(assembly, "%s:\n", nextlabel); 
           }
-#line 1603 "y.tab.c"
+#line 1612 "y.tab.c"
     break;
 
   case 39: /* $@4: %empty  */
-#line 302 "yacc.y"
+#line 311 "yacc.y"
                         {  		
 		truelabel = createLabel();
 		nextlabel = createLabel();
@@ -1639,11 +1648,11 @@ fprintf(assembly,"MOV %s,%s\n",(yyvsp[-3].addr),(yyvsp[-1].addr));
 		
 		
 		}
-#line 1643 "y.tab.c"
+#line 1652 "y.tab.c"
     break;
 
   case 40: /* S: WHILE '(' REL_E ')' $@4 BLOCK  */
-#line 338 "yacc.y"
+#line 347 "yacc.y"
          {
          	fprintf(inter, "goto %s\n",truelabel); 
          	fprintf(inter, "%s:\n",nextlabel); 
@@ -1651,11 +1660,11 @@ fprintf(assembly,"MOV %s,%s\n",(yyvsp[-3].addr),(yyvsp[-1].addr));
          	fprintf(assembly, "JMP %s\n",truelabel); 
          	fprintf(assembly, "%s:\n",nextlabel); 
          }
-#line 1655 "y.tab.c"
+#line 1664 "y.tab.c"
     break;
 
 
-#line 1659 "y.tab.c"
+#line 1668 "y.tab.c"
 
       default: break;
     }
@@ -1848,7 +1857,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 350 "yacc.y"
+#line 359 "yacc.y"
 
 
 

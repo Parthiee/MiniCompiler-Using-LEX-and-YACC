@@ -189,14 +189,23 @@ E : E '+' E {
       fprintf(assembly,"MOV %s,%s\n",$$,temp1);
   
   }
-  | '(' E ')' {  $$ = createTemp();    fprintf(inter,"%s := %s\n",$$,$2);      }
+  | '(' E ')' {  $$ = createTemp();    fprintf(inter,"%s := %s\n",$$,$2);   
+  char* temp1 = createRegister();
+  fprintf(assembly,"MOV %s,%s\n",temp1,$2);
+  fprintf(assembly,"MOV %s,%s\n",$$,temp1);
+  
+  
+  
+  
+  
+  }
   | ID { $$ = strdup($1); }
   | NUM_E {
   	$$ = malloc(10);
   	sprintf($$,"%d",$1);
   }
   ;
-  
+
  NUM_E : NUM_E '+' NUM_E { $$ = $1 + $3; }
        | NUM_E '-' NUM_E { $$ = $1 - $3; }
        | NUM_E '*' NUM_E { $$ = $1 * $3; }
@@ -204,7 +213,7 @@ E : E '+' E {
        | '-' NUM_E { $$ = -$2; }
        | NUM {$$ = $1; }
        ;
-
+       
 REL_E :  E REL_LT E { 
   $$ = createTemp();
   fprintf(inter,"%s := %s %s %s\n",$$,$1,$2,$3);
