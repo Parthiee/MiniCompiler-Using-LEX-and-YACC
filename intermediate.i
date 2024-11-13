@@ -1,10 +1,9 @@
-t0 := 5
-t1 := 3
-L100:
-if_false t1 == 0 goto L101 
-t0 := t0 * 5 
-t1 := t1 - 1 
-goto L100 
-L101: 
-t2 := t0
-b := t2
+t0 := a > b
+if_false a > b goto L101
+t1 := i + 1
+i := t1
+goto L102
+L101:
+t2 := i - 1
+i := t2
+L102:

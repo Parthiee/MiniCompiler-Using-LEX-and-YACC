@@ -1356,7 +1356,7 @@ fprintf(assembly,"MOV %s,%s\n",(yyvsp[-3].addr),(yyvsp[-1].addr));
       
       
       char* temp1 = createRegister();
-     
+      // STRENGTH REDUCTION
       truelabel = createLabel();
       nextlabel = createLabel();
       char* temp2 = createTemp();
@@ -1427,7 +1427,7 @@ fprintf(assembly,"MOV %s,%s\n",(yyvsp[-3].addr),(yyvsp[-1].addr));
   (yyval.addr) = createTemp();
   fprintf(inter,"%s := %s / %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[0].addr)); 
   
-     char* temp1 = createRegister();
+      char* temp1 = createRegister();
       char* temp2 = createRegister();
       fprintf(assembly,"MOV %s,%s\n",temp1,(yyvsp[-2].addr));
       fprintf(assembly,"MOV %s,%s\n",temp2,(yyvsp[0].addr));
@@ -1596,7 +1596,7 @@ fprintf(assembly,"MOV %s,%s\n",(yyvsp[-3].addr),(yyvsp[-1].addr));
  		truelabel = createLabel();
  		falselabel = createLabel();
 		nextlabel = createLabel();
-		fprintf(inter, "if_false %s %s %s goto %s\n", conds.operand1,conds.operator,conds.operand2, nextlabel); 
+		fprintf(inter, "if_false %s %s %s goto %s\n", conds.operand1,conds.operator,conds.operand2, falselabel); 
 		fprintf(assembly, "CMP %s,%s\n", conds.operand1, conds.operand2);
 		if (!strcmp(conds.operator,"<"))
 		 {

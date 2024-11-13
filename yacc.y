@@ -202,7 +202,7 @@ E : E '+' E {
   $$ = createTemp();
   fprintf(inter,"%s := %s / %s\n",$$,$1,$3); 
   
-     char* temp1 = createRegister();
+      char* temp1 = createRegister();
       char* temp2 = createRegister();
       fprintf(assembly,"MOV %s,%s\n",temp1,$1);
       fprintf(assembly,"MOV %s,%s\n",temp2,$3);
@@ -291,7 +291,7 @@ S : IF '(' REL_E ')' {
  		truelabel = createLabel();
  		falselabel = createLabel();
 		nextlabel = createLabel();
-		fprintf(inter, "if_false %s %s %s goto %s\n", conds.operand1,conds.operator,conds.operand2, nextlabel); 
+		fprintf(inter, "if_false %s %s %s goto %s\n", conds.operand1,conds.operator,conds.operand2, falselabel); 
 		fprintf(assembly, "CMP %s,%s\n", conds.operand1, conds.operand2);
 		if (!strcmp(conds.operator,"<"))
 		 {
