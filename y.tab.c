@@ -660,10 +660,10 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int16 yyrline[] =
 {
        0,    64,    64,    65,    69,    70,    73,    74,    77,    78,
-      81,    81,    84,    88,    93,   124,   135,   164,   196,   207,
-     220,   228,   233,   239,   240,   241,   242,   243,   244,   247,
-     255,   263,   271,   278,   286,   296,   330,   336,   296,   350,
-     353,   353
+      81,    81,    84,    88,    93,   128,   141,   171,   209,   222,
+     237,   247,   252,   258,   259,   260,   261,   262,   263,   266,
+     274,   282,   290,   297,   305,   315,   349,   355,   315,   369,
+     372,   372
 };
 #endif
 
@@ -711,11 +711,11 @@ static const yytype_int8 yypact[] =
      -65,    59,   -65,   -16,   -65,   -65,    -8,    -5,   -65,   -65,
       36,   -65,    44,    44,    44,    19,    27,    44,   -65,   -65,
       44,     9,    67,    79,    98,    24,    29,    36,     2,    39,
-      47,    35,    44,    44,    44,    44,    44,   -65,     0,     0,
+     -65,    35,    44,    44,    44,    44,    44,   -65,     0,     0,
        0,     0,   -65,    44,    44,    44,    44,    44,    44,   -65,
      -65,   -65,   -65,   -65,    -3,    -3,    39,    39,    39,     0,
       47,    47,   -65,   -65,    93,    93,    93,    93,    93,    93,
-      31,    31,    47,   -65,   -65,   -65,    37,    46,   -65,   -65,
+      31,    31,   -65,   -65,   -65,   -65,    37,    46,   -65,   -65,
       31,   -65
 };
 
@@ -1302,69 +1302,76 @@ yyreduce:
   				if(!strcmp((yyvsp[-2].addr),"0"))
   					{
       						fprintf(inter,"%s := %s\n",(yyval.addr),(yyvsp[0].addr)); 
-      						char* temp = createRegister();
-      						fprintf(assembly,"MOV %s,%s\n",temp,(yyvsp[0].addr));
-      						fprintf(assembly,"MOV %s,%s\n",(yyval.addr),temp);
+      						free((yyval.addr));
+      						(yyval.addr) = createRegister();
+      						fprintf(assembly,"MOV %s,%s\n",(yyval.addr),(yyvsp[0].addr));
+      						
  					}
   				else if(!strcmp((yyvsp[0].addr),"0"))
   					{
   						fprintf(inter,"%s := %s\n",(yyval.addr),(yyvsp[-2].addr)); 
-      						char* temp = createRegister();
-      						fprintf(assembly,"MOV %s,%s\n",temp,(yyvsp[-2].addr));
-      						fprintf(assembly,"MOV %s,%s\n",(yyval.addr),temp);
+      						free((yyval.addr));
+      						(yyval.addr) = createRegister();
+      						fprintf(assembly,"MOV %s,%s\n",(yyval.addr),(yyvsp[-2].addr));
+      						
   					}
   				else
     					{
+    						fprintf(inter,"%s := %s + %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[0].addr));
       						char* temp1 = createRegister();
       						char* temp2 = createRegister();
-      						fprintf(inter,"%s := %s + %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[0].addr)); 
-      						fprintf(assembly,"MOV %s,%s\n",temp1,(yyvsp[-2].addr));
+      						free((yyval.addr));
+      						(yyval.addr) = createRegister();
+      						fprintf(assembly,"MOV %s,%s\n",(yyval.addr),(yyvsp[-2].addr));
       						fprintf(assembly,"MOV %s,%s\n",temp2,(yyvsp[0].addr));
-      						fprintf(assembly,"ADD %s,%s\n",temp1,temp2);
-      						fprintf(assembly,"MOV %s,%s\n",(yyval.addr),temp1);
+      						fprintf(assembly,"ADD %s,%s\n",(yyval.addr),temp2);
+      						
     					}
 
   
  
   		}
-#line 1331 "y.tab.c"
+#line 1335 "y.tab.c"
     break;
 
   case 15: /* E: E '-' E  */
-#line 124 "yacc.y"
+#line 128 "yacc.y"
                                 { 
   						(yyval.addr) = createTemp();
   						fprintf(inter,"%s := %s - %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[0].addr)); 
       						char* temp1 = createRegister();
       						char* temp2 = createRegister();
-      						fprintf(assembly,"MOV %s,%s\n",temp1,(yyvsp[-2].addr));
+      						free((yyval.addr));
+      						(yyval.addr) = createRegister();
+      						fprintf(assembly,"MOV %s,%s\n",(yyval.addr),(yyvsp[-2].addr));
       						fprintf(assembly,"MOV %s,%s\n",temp2,(yyvsp[0].addr));
-      						fprintf(assembly,"SUB %s,%s\n",temp1,temp2);
-      						fprintf(assembly,"MOV %s,%s\n",(yyval.addr),temp1);
+      						fprintf(assembly,"SUB %s,%s\n",(yyval.addr),temp2);
+      						
   				}
-#line 1346 "y.tab.c"
+#line 1352 "y.tab.c"
     break;
 
   case 16: /* E: E STAR_STAR E  */
-#line 135 "yacc.y"
+#line 141 "yacc.y"
                                  {  
       						(yyval.addr) = createTemp();
-     						char* temp1 = createRegister();
+     						
       						// STRENGTH REDUCTION
       						truelabel = createLabel();
       						nextlabel = createLabel();
       						char* temp2 = createTemp();
       						fprintf(inter,"%s := %s\n",(yyval.addr),(yyvsp[-2].addr)); 
       						fprintf(inter,"%s := %s\n",temp2,(yyvsp[0].addr)); 
- 
       						fprintf(inter,"%s:\n",truelabel);
-     						fprintf(inter,"if_false %s == 1 goto %s \n",temp2,nextlabel); 
+     						fprintf(inter,"if_false %s != 1 goto %s \n",temp2,nextlabel); 
       						fprintf(inter,"%s := %s * %s \n",(yyval.addr),(yyval.addr),(yyvsp[-2].addr)); 
       						fprintf(inter,"%s := %s - 1 \n",temp2,temp2); 
       						fprintf(inter,"goto %s \n",truelabel); 
       						fprintf(inter,"%s: \n",nextlabel); 
       
-      
+      						free((yyval.addr));
+      						(yyval.addr) = createRegister();
+      						char* temp1 = createRegister();
       						fprintf(assembly,"MOV %s,%s\n",temp1,(yyvsp[0].addr));
       						fprintf(assembly,"MOV %s,%s\n",(yyval.addr),(yyvsp[-2].addr));
       						fprintf(assembly,"%s:\n",truelabel);
@@ -1375,36 +1382,42 @@ yyreduce:
       						fprintf(assembly,"JMP %s\n",truelabel);
       						fprintf(assembly,"%s:\n",nextlabel);
  				 }
-#line 1379 "y.tab.c"
+#line 1386 "y.tab.c"
     break;
 
   case 17: /* E: E '*' E  */
-#line 164 "yacc.y"
+#line 171 "yacc.y"
                                 { 
   						(yyval.addr) = createTemp();
    						if(!strcmp((yyvsp[-2].addr),"1"))
   							{
       								fprintf(inter,"%s := %s\n",(yyval.addr),(yyvsp[0].addr)); 
       								char* temp = createRegister();
-      								fprintf(assembly,"MOV %s,%s\n",temp,(yyvsp[0].addr));
-      								fprintf(assembly,"MOV %s,%s\n",(yyval.addr),temp);
+      								free((yyval.addr));
+      								(yyval.addr) = createRegister();
+      								fprintf(assembly,"MOV %s,%s\n",(yyval.addr),(yyvsp[0].addr));
  							}
   						else if(!strcmp((yyvsp[0].addr),"1"))
   							{
       								fprintf(inter,"%s := %s\n",(yyval.addr),(yyvsp[-2].addr)); 
       								char* temp = createRegister();
-      								fprintf(assembly,"MOV %s,%s\n",temp,(yyvsp[-2].addr));
-      								fprintf(assembly,"MOV %s,%s\n",(yyval.addr),temp);
+      								free((yyval.addr));
+      								(yyval.addr) = createRegister();
+      								fprintf(assembly,"MOV %s,%s\n",(yyval.addr),(yyvsp[-2].addr));
+      								
   							}
   						else
   							{
       								char* temp1 = createRegister();
       								char* temp2 = createRegister();
         							fprintf(inter,"%s := %s * %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[0].addr)); 
-      								fprintf(assembly,"MOV %s,%s\n",temp1,(yyvsp[-2].addr));
+        							
+        							free((yyval.addr));
+      								(yyval.addr) = createRegister();
+      								fprintf(assembly,"MOV %s,%s\n",(yyval.addr),(yyvsp[-2].addr));
       								fprintf(assembly,"MOV %s,%s\n",temp2,(yyvsp[0].addr));
-      								fprintf(assembly,"MUL %s,%s\n",temp1,temp2);
-     								fprintf(assembly,"MOV %s,%s\n",(yyval.addr),temp1);
+      								fprintf(assembly,"MUL %s,%s\n",(yyval.addr),temp2);
+     								
   
   							}
   
@@ -1412,110 +1425,116 @@ yyreduce:
   
   
   				}
-#line 1416 "y.tab.c"
+#line 1429 "y.tab.c"
     break;
 
   case 18: /* E: E '/' E  */
-#line 196 "yacc.y"
+#line 209 "yacc.y"
                                                         { 
   								(yyval.addr) = createTemp();
   								fprintf(inter,"%s := %s / %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[0].addr)); 
      								char* temp1 = createRegister();
       								char* temp2 = createRegister();
-      								fprintf(assembly,"MOV %s,%s\n",temp1,(yyvsp[-2].addr));
+      								free((yyval.addr));
+      								(yyval.addr) = createRegister();
+      								fprintf(assembly,"MOV %s,%s\n",(yyval.addr),(yyvsp[-2].addr));
       								fprintf(assembly,"MOV %s,%s\n",temp2,(yyvsp[0].addr));
-      								fprintf(assembly,"DIV %s,%s\n",temp1,temp2);
-      								fprintf(assembly,"MOV %s,%s\n",(yyval.addr),temp1);
+      								fprintf(assembly,"DIV %s,%s\n",(yyval.addr),temp2);
+      								
       
   							}
-#line 1432 "y.tab.c"
+#line 1447 "y.tab.c"
     break;
 
   case 19: /* E: '-' E  */
-#line 207 "yacc.y"
+#line 222 "yacc.y"
                                                         { 
   
   								(yyval.addr) = createTemp();
   								fprintf(inter,"%s := - %s\n",(yyval.addr),(yyvsp[0].addr)); 
       								char* temp1 = createRegister();
       								char* temp2 = createRegister();
-      								fprintf(assembly,"MOV %s,%s\n",temp1,(yyvsp[0].addr));
-      								fprintf(assembly,"NOT %s\n",temp1);
-      								fprintf(assembly,"ADD %s,#1\n",temp1);
-      								fprintf(assembly,"MOV %s,%s\n",(yyval.addr),temp1);
+      								free((yyval.addr));
+      								(yyval.addr) = createRegister();
+      								fprintf(assembly,"MOV %s,%s\n",(yyval.addr),(yyvsp[0].addr));
+      								fprintf(assembly,"NOT %s\n",(yyval.addr));
+      								fprintf(assembly,"ADD %s,#1\n",(yyval.addr));
+      								
   
   							}
-#line 1449 "y.tab.c"
+#line 1466 "y.tab.c"
     break;
 
   case 20: /* E: '(' E ')'  */
-#line 220 "yacc.y"
+#line 237 "yacc.y"
                                                         {  	
   								(yyval.addr) = createTemp(); 
   								fprintf(inter,"%s := %s\n",(yyval.addr),(yyvsp[-1].addr));   
   								char* temp1 = createRegister();
-  								fprintf(assembly,"MOV %s,%s\n",temp1,(yyvsp[-1].addr));
-  								fprintf(assembly,"MOV %s,%s\n",(yyval.addr),temp1);
+  								free((yyval.addr));
+      								(yyval.addr) = createRegister();
+  								fprintf(assembly,"MOV %s,%s\n",(yyval.addr),(yyvsp[-1].addr));
+  								
   							}
-#line 1461 "y.tab.c"
+#line 1480 "y.tab.c"
     break;
 
   case 21: /* E: ID  */
-#line 228 "yacc.y"
+#line 247 "yacc.y"
                                                         { 
   								(yyval.addr) = strdup((yyvsp[0].addr)); 
   								
   							}
-#line 1470 "y.tab.c"
+#line 1489 "y.tab.c"
     break;
 
   case 22: /* E: NUM_E  */
-#line 233 "yacc.y"
+#line 252 "yacc.y"
                                                         {
   								(yyval.addr) = malloc(10);
   								sprintf((yyval.addr),"%d",(yyvsp[0].intval));
   							}
-#line 1479 "y.tab.c"
+#line 1498 "y.tab.c"
     break;
 
   case 23: /* NUM_E: NUM_E '+' NUM_E  */
-#line 239 "yacc.y"
+#line 258 "yacc.y"
                                                         { (yyval.intval) = (yyvsp[-2].intval) + (yyvsp[0].intval); }
-#line 1485 "y.tab.c"
+#line 1504 "y.tab.c"
     break;
 
   case 24: /* NUM_E: NUM_E '-' NUM_E  */
-#line 240 "yacc.y"
+#line 259 "yacc.y"
                                                         { (yyval.intval) = (yyvsp[-2].intval) - (yyvsp[0].intval); }
-#line 1491 "y.tab.c"
+#line 1510 "y.tab.c"
     break;
 
   case 25: /* NUM_E: NUM_E '*' NUM_E  */
-#line 241 "yacc.y"
+#line 260 "yacc.y"
                                                         { (yyval.intval) = (yyvsp[-2].intval) * (yyvsp[0].intval); }
-#line 1497 "y.tab.c"
+#line 1516 "y.tab.c"
     break;
 
   case 26: /* NUM_E: NUM_E '/' NUM_E  */
-#line 242 "yacc.y"
+#line 261 "yacc.y"
                                                         { (yyval.intval) = (yyvsp[-2].intval) / (yyvsp[0].intval); }
-#line 1503 "y.tab.c"
+#line 1522 "y.tab.c"
     break;
 
   case 27: /* NUM_E: '-' NUM_E  */
-#line 243 "yacc.y"
+#line 262 "yacc.y"
                                                         { (yyval.intval) = -(yyvsp[0].intval); }
-#line 1509 "y.tab.c"
+#line 1528 "y.tab.c"
     break;
 
   case 28: /* NUM_E: NUM  */
-#line 244 "yacc.y"
+#line 263 "yacc.y"
                                                         {(yyval.intval) = (yyvsp[0].intval); }
-#line 1515 "y.tab.c"
+#line 1534 "y.tab.c"
     break;
 
   case 29: /* REL_E: E REL_LT E  */
-#line 247 "yacc.y"
+#line 266 "yacc.y"
                                                         { 
   								(yyval.addr) = createTemp();
   								fprintf(inter,"%s := %s %s %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[-1].addr),(yyvsp[0].addr));
@@ -1523,11 +1542,11 @@ yyreduce:
   								conds.operator = strdup((yyvsp[-1].addr));
   								conds.operand2 = strdup((yyvsp[0].addr));
   							}
-#line 1527 "y.tab.c"
+#line 1546 "y.tab.c"
     break;
 
   case 30: /* REL_E: E REL_LTEQ E  */
-#line 255 "yacc.y"
+#line 274 "yacc.y"
                                                         {
   								(yyval.addr) = createTemp(); 
   								fprintf(inter,"%s := %s %s %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[-1].addr),(yyvsp[0].addr)); 
@@ -1535,11 +1554,11 @@ yyreduce:
   								conds.operator = strdup((yyvsp[-1].addr));
   								conds.operand2 = strdup((yyvsp[0].addr));
  							}
-#line 1539 "y.tab.c"
+#line 1558 "y.tab.c"
     break;
 
   case 31: /* REL_E: E REL_EQ E  */
-#line 263 "yacc.y"
+#line 282 "yacc.y"
                                                         { 
   								(yyval.addr) = createTemp(); 
   								fprintf(inter,"%s := %s %s %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[-1].addr),(yyvsp[0].addr)); 
@@ -1547,11 +1566,11 @@ yyreduce:
   								conds.operator = strdup((yyvsp[-1].addr));
   								conds.operand2 = strdup((yyvsp[0].addr));
   							}
-#line 1551 "y.tab.c"
+#line 1570 "y.tab.c"
     break;
 
   case 32: /* REL_E: E REL_NEQ E  */
-#line 271 "yacc.y"
+#line 290 "yacc.y"
                                                         { 
   								(yyval.addr) = createTemp();
   								fprintf(inter,"%s := %s %s %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[-1].addr),(yyvsp[0].addr));
@@ -1559,11 +1578,11 @@ yyreduce:
   								conds.operator = strdup((yyvsp[-1].addr));
   								conds.operand2 = strdup((yyvsp[0].addr));
   							}
-#line 1563 "y.tab.c"
+#line 1582 "y.tab.c"
     break;
 
   case 33: /* REL_E: E REL_GT E  */
-#line 279 "yacc.y"
+#line 298 "yacc.y"
                                                         { 
  								(yyval.addr) = createTemp();
   								fprintf(inter,"%s := %s %s %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[-1].addr),(yyvsp[0].addr)); 
@@ -1571,11 +1590,11 @@ yyreduce:
   								conds.operator = strdup((yyvsp[-1].addr));
   								conds.operand2 = strdup((yyvsp[0].addr));
  							}
-#line 1575 "y.tab.c"
+#line 1594 "y.tab.c"
     break;
 
   case 34: /* REL_E: E REL_GTEQ E  */
-#line 287 "yacc.y"
+#line 306 "yacc.y"
                                                         { 	(yyval.addr) = createTemp(); 
   								fprintf(inter,"%s := %s %s %s\n",(yyval.addr),(yyvsp[-2].addr),(yyvsp[-1].addr),(yyvsp[0].addr));
   								conds.operand1 = strdup((yyvsp[-2].addr));
@@ -1583,11 +1602,11 @@ yyreduce:
   								conds.operand2 = strdup((yyvsp[0].addr));
   
   							}
-#line 1587 "y.tab.c"
+#line 1606 "y.tab.c"
     break;
 
   case 35: /* $@1: %empty  */
-#line 296 "yacc.y"
+#line 315 "yacc.y"
                                         {
  						truelabel = createLabel();
  						falselabel = createLabel();
@@ -1621,39 +1640,39 @@ yyreduce:
 		
 		
 					}
-#line 1625 "y.tab.c"
+#line 1644 "y.tab.c"
     break;
 
   case 36: /* $@2: %empty  */
-#line 330 "yacc.y"
+#line 349 "yacc.y"
                                         {
 						fprintf(inter, "goto %s\n", nextlabel);
 		 				fprintf(assembly, "JMP %s\n",nextlabel);
 
            				}
-#line 1635 "y.tab.c"
+#line 1654 "y.tab.c"
     break;
 
   case 37: /* $@3: %empty  */
-#line 336 "yacc.y"
+#line 355 "yacc.y"
                                         {
          					fprintf(inter, "%s:\n", falselabel); 
          					fprintf(assembly, "%s:\n",falselabel);
           				}
-#line 1644 "y.tab.c"
+#line 1663 "y.tab.c"
     break;
 
   case 38: /* S: IF '(' REL_E ')' $@1 BLOCK $@2 ELSE $@3 BLOCK  */
-#line 342 "yacc.y"
+#line 361 "yacc.y"
                                         {
          					fprintf(inter, "%s:\n", nextlabel);
          					fprintf(assembly, "%s:\n", nextlabel); 
           				}
-#line 1653 "y.tab.c"
+#line 1672 "y.tab.c"
     break;
 
   case 40: /* $@4: %empty  */
-#line 353 "yacc.y"
+#line 372 "yacc.y"
                                         {  		
 						truelabel = createLabel();
 						nextlabel = createLabel();
@@ -1689,22 +1708,22 @@ yyreduce:
 		
 		
 					}
-#line 1693 "y.tab.c"
+#line 1712 "y.tab.c"
     break;
 
   case 41: /* S: WHILE '(' REL_E ')' $@4 BLOCK  */
-#line 389 "yacc.y"
+#line 408 "yacc.y"
                                         {
          					fprintf(inter, "goto %s\n",truelabel); 
          					fprintf(inter, "%s:\n",nextlabel); 
          					fprintf(assembly, "JMP %s\n",truelabel); 
          					fprintf(assembly, "%s:\n",nextlabel); 
          				}
-#line 1704 "y.tab.c"
+#line 1723 "y.tab.c"
     break;
 
 
-#line 1708 "y.tab.c"
+#line 1727 "y.tab.c"
 
       default: break;
     }
@@ -1897,7 +1916,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 400 "yacc.y"
+#line 419 "yacc.y"
 
 
 

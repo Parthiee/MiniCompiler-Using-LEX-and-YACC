@@ -95,26 +95,30 @@ E : E '+' E 	  {
   				if(!strcmp($1,"0"))
   					{
       						fprintf(inter,"%s := %s\n",$$,$3); 
-      						char* temp = createRegister();
-      						fprintf(assembly,"MOV %s,%s\n",temp,$3);
-      						fprintf(assembly,"MOV %s,%s\n",$$,temp);
+      						free($$);
+      						$$ = createRegister();
+      						fprintf(assembly,"MOV %s,%s\n",$$,$3);
+      						
  					}
   				else if(!strcmp($3,"0"))
   					{
   						fprintf(inter,"%s := %s\n",$$,$1); 
-      						char* temp = createRegister();
-      						fprintf(assembly,"MOV %s,%s\n",temp,$1);
-      						fprintf(assembly,"MOV %s,%s\n",$$,temp);
+      						free($$);
+      						$$ = createRegister();
+      						fprintf(assembly,"MOV %s,%s\n",$$,$1);
+      						
   					}
   				else
     					{
+    						fprintf(inter,"%s := %s + %s\n",$$,$1,$3);
       						char* temp1 = createRegister();
       						char* temp2 = createRegister();
-      						fprintf(inter,"%s := %s + %s\n",$$,$1,$3); 
-      						fprintf(assembly,"MOV %s,%s\n",temp1,$1);
+      						free($$);
+      						$$ = createRegister();
+      						fprintf(assembly,"MOV %s,%s\n",$$,$1);
       						fprintf(assembly,"MOV %s,%s\n",temp2,$3);
-      						fprintf(assembly,"ADD %s,%s\n",temp1,temp2);
-      						fprintf(assembly,"MOV %s,%s\n",$$,temp1);
+      						fprintf(assembly,"ADD %s,%s\n",$$,temp2);
+      						
     					}
 
   
@@ -126,22 +130,23 @@ E : E '+' E 	  {
   						fprintf(inter,"%s := %s - %s\n",$$,$1,$3); 
       						char* temp1 = createRegister();
       						char* temp2 = createRegister();
-      						fprintf(assembly,"MOV %s,%s\n",temp1,$1);
+      						free($$);
+      						$$ = createRegister();
+      						fprintf(assembly,"MOV %s,%s\n",$$,$1);
       						fprintf(assembly,"MOV %s,%s\n",temp2,$3);
-      						fprintf(assembly,"SUB %s,%s\n",temp1,temp2);
-      						fprintf(assembly,"MOV %s,%s\n",$$,temp1);
+      						fprintf(assembly,"SUB %s,%s\n",$$,temp2);
+      						
   				}
   
    | E STAR_STAR E		 {  
       						$$ = createTemp();
-     						char* temp1 = createRegister();
+     						
       						// STRENGTH REDUCTION
       						truelabel = createLabel();
       						nextlabel = createLabel();
       						char* temp2 = createTemp();
       						fprintf(inter,"%s := %s\n",$$,$1); 
       						fprintf(inter,"%s := %s\n",temp2,$3); 
- 
       						fprintf(inter,"%s:\n",truelabel);
      						fprintf(inter,"if_false %s != 1 goto %s \n",temp2,nextlabel); 
       						fprintf(inter,"%s := %s * %s \n",$$,$$,$1); 
@@ -149,7 +154,9 @@ E : E '+' E 	  {
       						fprintf(inter,"goto %s \n",truelabel); 
       						fprintf(inter,"%s: \n",nextlabel); 
       
-      
+      						free($$);
+      						$$ = createRegister();
+      						char* temp1 = createRegister();
       						fprintf(assembly,"MOV %s,%s\n",temp1,$3);
       						fprintf(assembly,"MOV %s,%s\n",$$,$1);
       						fprintf(assembly,"%s:\n",truelabel);
@@ -167,25 +174,31 @@ E : E '+' E 	  {
   							{
       								fprintf(inter,"%s := %s\n",$$,$3); 
       								char* temp = createRegister();
-      								fprintf(assembly,"MOV %s,%s\n",temp,$3);
-      								fprintf(assembly,"MOV %s,%s\n",$$,temp);
+      								free($$);
+      								$$ = createRegister();
+      								fprintf(assembly,"MOV %s,%s\n",$$,$3);
  							}
   						else if(!strcmp($3,"1"))
   							{
       								fprintf(inter,"%s := %s\n",$$,$1); 
       								char* temp = createRegister();
-      								fprintf(assembly,"MOV %s,%s\n",temp,$1);
-      								fprintf(assembly,"MOV %s,%s\n",$$,temp);
+      								free($$);
+      								$$ = createRegister();
+      								fprintf(assembly,"MOV %s,%s\n",$$,$1);
+      								
   							}
   						else
   							{
       								char* temp1 = createRegister();
       								char* temp2 = createRegister();
         							fprintf(inter,"%s := %s * %s\n",$$,$1,$3); 
-      								fprintf(assembly,"MOV %s,%s\n",temp1,$1);
+        							
+        							free($$);
+      								$$ = createRegister();
+      								fprintf(assembly,"MOV %s,%s\n",$$,$1);
       								fprintf(assembly,"MOV %s,%s\n",temp2,$3);
-      								fprintf(assembly,"MUL %s,%s\n",temp1,temp2);
-     								fprintf(assembly,"MOV %s,%s\n",$$,temp1);
+      								fprintf(assembly,"MUL %s,%s\n",$$,temp2);
+     								
   
   							}
   
@@ -198,10 +211,12 @@ E : E '+' E 	  {
   								fprintf(inter,"%s := %s / %s\n",$$,$1,$3); 
      								char* temp1 = createRegister();
       								char* temp2 = createRegister();
-      								fprintf(assembly,"MOV %s,%s\n",temp1,$1);
+      								free($$);
+      								$$ = createRegister();
+      								fprintf(assembly,"MOV %s,%s\n",$$,$1);
       								fprintf(assembly,"MOV %s,%s\n",temp2,$3);
-      								fprintf(assembly,"DIV %s,%s\n",temp1,temp2);
-      								fprintf(assembly,"MOV %s,%s\n",$$,temp1);
+      								fprintf(assembly,"DIV %s,%s\n",$$,temp2);
+      								
       
   							}
   | '-' E %prec UMINUS 					{ 
@@ -210,10 +225,12 @@ E : E '+' E 	  {
   								fprintf(inter,"%s := - %s\n",$$,$2); 
       								char* temp1 = createRegister();
       								char* temp2 = createRegister();
-      								fprintf(assembly,"MOV %s,%s\n",temp1,$2);
-      								fprintf(assembly,"NOT %s\n",temp1);
-      								fprintf(assembly,"ADD %s,#1\n",temp1);
-      								fprintf(assembly,"MOV %s,%s\n",$$,temp1);
+      								free($$);
+      								$$ = createRegister();
+      								fprintf(assembly,"MOV %s,%s\n",$$,$2);
+      								fprintf(assembly,"NOT %s\n",$$);
+      								fprintf(assembly,"ADD %s,#1\n",$$);
+      								
   
   							}
   							
@@ -221,8 +238,10 @@ E : E '+' E 	  {
   								$$ = createTemp(); 
   								fprintf(inter,"%s := %s\n",$$,$2);   
   								char* temp1 = createRegister();
-  								fprintf(assembly,"MOV %s,%s\n",temp1,$2);
-  								fprintf(assembly,"MOV %s,%s\n",$$,temp1);
+  								free($$);
+      								$$ = createRegister();
+  								fprintf(assembly,"MOV %s,%s\n",$$,$2);
+  								
   							}
   							
   | ID 							{ 
