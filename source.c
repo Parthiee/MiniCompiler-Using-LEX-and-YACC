@@ -1,17 +1,15 @@
-int a,b,c,d;
-a=10;
-b=20;
+int a,b,c,i;
 c=a+b;
-d=10*10+10;
-c=c+0;
-d=d/1;
-e=a**2;
-
-if(c>a)
+c=a-b;
+if(a==0)
 {
-c=c-b;
+i=0;
 }
 else
 {
-c=a+b;
+i=1;
+}
+while(2==2)
+{
+i=0;
 }

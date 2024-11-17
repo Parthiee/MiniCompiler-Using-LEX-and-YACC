@@ -1,27 +1,17 @@
-a := 10
-b := 20
 t0 := a + b
 c := R2
-d := 110
-t1 := c
-c := R3
-t2 := d / 1
-d := R6
-t3 := a
-t4 := 2
-L100:
-if_false t4 != 1 goto L101 
-t3 := t3 * a 
-t4 := t4 - 1 
-goto L100 
-L101: 
-e := R7
-t5 := c > a
-if_false c > a goto L103
-t6 := c - b
-c := R11
-goto L104
+t1 := a - b
+c := R5
+t2 := a == 0
+if_false a == 0 goto L101
+i := 0
+goto L102
+L101:
+i := 1
+L102:
+t3 := 2 == 2
 L103:
-t7 := a + b
-c := R14
+if_false 2 == 2 goto L104
+i := 0
+goto L103
 L104:

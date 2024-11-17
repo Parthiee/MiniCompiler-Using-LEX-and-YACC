@@ -83,10 +83,12 @@ T : INT | FLOAT
   
 S : ID '=' E ';' { 		fprintf(inter,"%s := %s\n",$1,$3); 
 				fprintf(assembly,"MOV %s,%s\n",$1,$3);
+				free($3);
 		 }
 		 
   | ID '=' NUM_E ';' { 		fprintf(inter,"%s := %d\n",$1,$3); 
   				fprintf(assembly,"MOV %s,#%d\n",$1,$3);
+  				
 		     }
   ;
   
@@ -119,7 +121,11 @@ E : E '+' E 	  {
       						fprintf(assembly,"MOV %s,%s\n",temp2,$3);
       						fprintf(assembly,"ADD %s,%s\n",$$,temp2);
       						
+      						free(temp1);
+      						free(temp2);
+      						
     					}
+    				
 
   
  
@@ -135,6 +141,9 @@ E : E '+' E 	  {
       						fprintf(assembly,"MOV %s,%s\n",$$,$1);
       						fprintf(assembly,"MOV %s,%s\n",temp2,$3);
       						fprintf(assembly,"SUB %s,%s\n",$$,temp2);
+      					
+      						free(temp1);
+      						free(temp2);
       						
   				}
   
@@ -166,6 +175,10 @@ E : E '+' E 	  {
       						fprintf(assembly,"SUB %s,#1\n",temp1);
       						fprintf(assembly,"JMP %s\n",truelabel);
       						fprintf(assembly,"%s:\n",nextlabel);
+      						
+      						
+      						free(temp1);
+      						free(temp2);
  				 }
 
   | E '*' E 			{ 
@@ -177,6 +190,8 @@ E : E '+' E 	  {
       								free($$);
       								$$ = createRegister();
       								fprintf(assembly,"MOV %s,%s\n",$$,$3);
+      								
+      								free(temp);
  							}
   						else if(!strcmp($3,"1"))
   							{
@@ -185,6 +200,7 @@ E : E '+' E 	  {
       								free($$);
       								$$ = createRegister();
       								fprintf(assembly,"MOV %s,%s\n",$$,$1);
+      								free(temp);
       								
   							}
   						else
@@ -198,9 +214,14 @@ E : E '+' E 	  {
       								fprintf(assembly,"MOV %s,%s\n",$$,$1);
       								fprintf(assembly,"MOV %s,%s\n",temp2,$3);
       								fprintf(assembly,"MUL %s,%s\n",$$,temp2);
+      								
+      								free(temp1);
+      								free(temp2);
      								
   
   							}
+  							
+  						
   
 
   
@@ -217,6 +238,10 @@ E : E '+' E 	  {
       								fprintf(assembly,"MOV %s,%s\n",temp2,$3);
       								fprintf(assembly,"DIV %s,%s\n",$$,temp2);
       								
+      								
+      								free(temp1);
+      								free(temp2);
+      								
       
   							}
   | '-' E %prec UMINUS 					{ 
@@ -231,6 +256,10 @@ E : E '+' E 	  {
       								fprintf(assembly,"NOT %s\n",$$);
       								fprintf(assembly,"ADD %s,#1\n",$$);
       								
+      							
+      								free(temp1);
+      								free(temp2);
+      								
   
   							}
   							
@@ -242,6 +271,9 @@ E : E '+' E 	  {
       								$$ = createRegister();
   								fprintf(assembly,"MOV %s,%s\n",$$,$2);
   								
+  							
+  								free(temp1);
+  								
   							}
   							
   | ID 							{ 
@@ -252,6 +284,7 @@ E : E '+' E 	  {
   | NUM_E 						{
   								$$ = malloc(10);
   								sprintf($$,"%d",$1);
+  								
   							}
   ;
 
@@ -269,6 +302,8 @@ REL_E :  E REL_LT E 					{
   								conds.operand1 = strdup($1);
   								conds.operator = strdup($2);
   								conds.operand2 = strdup($3);
+  								
+  								free($$);
   							}
   							
   | E REL_LTEQ E 					{
@@ -277,6 +312,8 @@ REL_E :  E REL_LT E 					{
   								conds.operand1 = strdup($1);
   								conds.operator = strdup($2);
   								conds.operand2 = strdup($3);
+  								
+  								free($$);
  							}
  							
   | E REL_EQ E 						{ 
@@ -285,6 +322,8 @@ REL_E :  E REL_LT E 					{
   								conds.operand1 = strdup($1);
   								conds.operator = strdup($2);
   								conds.operand2 = strdup($3);
+  								
+  								free($$);
   							}
   							
   | E REL_NEQ E 					{ 
@@ -293,6 +332,8 @@ REL_E :  E REL_LT E 					{
   								conds.operand1 = strdup($1);
   								conds.operator = strdup($2);
   								conds.operand2 = strdup($3);
+  								
+  								free($$);
   							}
   | E REL_GT E
  							{ 
@@ -301,6 +342,8 @@ REL_E :  E REL_LT E 					{
   								conds.operand1 = strdup($1);
   								conds.operator = strdup($2);
   								conds.operand2 = strdup($3);
+  								
+  								free($$);
  							}
   | E REL_GTEQ E
   							{ 	$$ = createTemp(); 
@@ -308,6 +351,8 @@ REL_E :  E REL_LT E 					{
   								conds.operand1 = strdup($1);
   								conds.operator = strdup($2);
   								conds.operand2 = strdup($3);
+  								
+  								free($$);
   
   							}
   							
@@ -361,6 +406,10 @@ S : IF '(' REL_E ')' 			{
  	 				{
          					fprintf(inter, "%s:\n", nextlabel);
          					fprintf(assembly, "%s:\n", nextlabel); 
+         					
+         					free(falselabel);
+         					free(truelabel);	
+         					free(nextlabel);
           				}
   ;
 
@@ -410,6 +459,9 @@ S : WHILE '(' REL_E ')' 		{
          					fprintf(inter, "%s:\n",nextlabel); 
          					fprintf(assembly, "JMP %s\n",truelabel); 
          					fprintf(assembly, "%s:\n",nextlabel); 
+         					
+         					free(truelabel);
+         					free(nextlabel);
          				}
    ;
 
